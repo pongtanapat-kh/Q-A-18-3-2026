@@ -38,9 +38,42 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* แชทบอท CSS */
-        #chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9900; }
-        .bot-tooltip { position: absolute; right: 65px; bottom: 20px; background: white; padding: 6px 12px; border-radius: 12px; border: 1px solid #10b981; font-weight: 700; color: #059669; font-size: 11px; white-space: nowrap; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.15); cursor: pointer;}
-        #chat-box { width: 360px; height: 550px; max-height: 80vh; background: white; border-radius: 1.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; position: absolute; bottom: 85px; right: 0; transform: scale(0); transform-origin: bottom right; transition: transform 0.3s ease; border: 1px solid #e2e8f0; overflow: hidden; }
+        /* 🚨 แก้ไข 1: เพิ่ม pointer-events: none และปรับตำแหน่งให้อยู่ล่างสุดเสมอ Footer (-5px) */
+        #chat-widget { position: fixed; bottom: -5px; right: 10px; z-index: 9900; pointer-events: none; }
+        
+        /* 🚨 แก้ไข 2: ปรับตำแหน่ง Tooltip ให้อยู่ระดับแขนบอท (bottom: 90px) */
+        .bot-tooltip { position: absolute; right: 180px; bottom: 90px; background: white; padding: 5px 10px; border-radius: 8px; border: 1px solid #10b981; font-weight: 600; color: #059669; font-size: 11px; white-space: nowrap; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.1); cursor: pointer; transition: all 0.3s ease; z-index: 9901; pointer-events: auto; }
+        .bot-tooltip:hover { transform: scale(1.05); }
+        .bot-tooltip::after { content: ''; position: absolute; top: 50%; right: -4px; transform: translateY(-50%); border-width: 5px 0 5px 5px; border-style: solid; border-color: transparent transparent transparent white; }
+        .bot-tooltip::before { content: ''; position: absolute; top: 50%; right: -5px; transform: translateY(-50%); border-width: 6px 0 6px 6px; border-style: solid; border-color: transparent transparent transparent #10b981; }
+
+        /* เพิ่มขนาด 3 เท่า (75px * 3 = 225px) และปรับสีมาสคอตให้คมชัด */
+        .bot-mascot-img {
+            width: 225px !important; 
+            height: 225px !important;
+            object-fit: contain !important;
+            filter: contrast(1.15) saturate(1.2) drop-shadow(0px 8px 15px rgba(0,0,0,0.25)) !important;
+            image-rendering: -webkit-optimize-contrast !important;
+            pointer-events: none !important; /* ทะลุการคลิกส่วนที่เป็นภาพโปร่งใส */
+        }
+
+        /* 🚨 แก้ไข 3: พื้นที่ Hitbox รับการคลิกและ Hover พอดีตัวมาสคอต (ปรับตำแหน่งให้ต่ำลงตามตัวบอท) */
+        .bot-hitbox {
+            position: absolute;
+            width: 100px;
+            height: 140px;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: auto;
+            cursor: pointer;
+            z-index: 20;
+            border-radius: 50px;
+        }
+
+        /* ขยับกล่องแชทลงมาเพื่อไม่ให้ล้นจอด้านบน และใช้ dvh ป้องกันบั๊กบนเบราว์เซอร์มือถือ */
+        /* 🚨 แก้ไข 4: เปิดการรับคลิกสำหรับกล่องแชทหลัก (ปรับ bottom ลงมาให้สอดคล้องกับบอท) */
+        #chat-box { width: 360px; height: 550px; max-height: 80dvh; background: white; border-radius: 1.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; position: absolute; bottom: 100px; right: 0; transform: scale(0); transform-origin: bottom right; transition: transform 0.3s ease; border: 1px solid #e2e8f0; overflow: hidden; z-index: 10000; pointer-events: auto; }
         #chat-box.open { transform: scale(1); }
         #chat-header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
         #chat-messages { flex: 1; overflow-y: auto; padding: 15px; background-color: #f8fafc; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
@@ -62,14 +95,14 @@
         .checkbox-item { display: flex; align-items: center; padding: 6px 8px; border-radius: 8px; cursor: pointer;}
         .checkbox-item input { margin-right: 10px; width: 16px; height: 16px; accent-color: #10b981; }
 
-        /* 📱 ปรับกล่องแชทบอท และช่องพิมพ์ข้อความบนมือถือไม่ให้ซูม */
+        /* 📱 ปรับกล่องแชทบอท และช่องพิมพ์ข้อความบนมือถือไม่ให้ซูม และปรับความสูงให้พอดีหน้าจอ 100% */
         @media (max-width: 768px) { 
-            #chat-box { width: calc(100vw - 30px); height: calc(100vh - 120px); bottom: 85px; right: 15px; } 
+            #chat-box { width: calc(100vw - 30px); height: calc(100dvh - 140px); max-height: calc(100dvh - 140px); bottom: 120px; right: 15px; } 
             .modern-input { font-size: 16px !important; } /* iOS Fix: ป้องกันหน้าจอซูมเวลาจิ้มกล่องข้อความ */
         }
 
         /* =======================================
-           🌊 CSS สำหรับกราฟฟิกคลื่นด้านล่างเว็บ 
+            🌊 CSS สำหรับกราฟฟิกคลื่นด้านล่างเว็บ 
         ======================================= */
         .parallax > use {
             animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
@@ -455,37 +488,29 @@
 
     <!-- 🤖 FLOATING CHATBOT WIDGET -->
     <div id="chat-widget">
+        <!-- กรอบข้อความแนวนอนตรงๆ พร้อมลูกเล่นสามเหลี่ยมหางชี้เข้าหาบอท -->
         <div class="bot-tooltip" onclick="toggleChat()">
-            💬 น้องคลังเกษตร มีคำตอบ<br><span class="text-[6px] text-emerald-500/80 font-normal">คลิกสอบถามข้อมูล</span>
+            ✨ น้องคลังเกษตร มีคำตอบ
         </div>
 
-        <div id="chat-toggle" onclick="toggleChat()" title="คุยกับน้องคลังเกษตร" class="relative cursor-pointer transition-transform hover:scale-110">
+        <div id="chat-toggle" onclick="toggleChat()" title="คุยกับน้องคลังเกษตร" class="relative transition-transform hover:scale-110 mt-2">
+            
+            <!-- 🚨 เพิ่มส่วนนี้: กล่อง Hitbox ที่กำหนดพื้นที่คลิกเฉพาะตรงกลางตัวมาสคอต (พื้นที่โปร่งใสจะไม่มีผล) -->
+            <div class="bot-hitbox"></div>
+            
             <div class="flex flex-col items-center">
-                <div class="w-14 h-12 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-t-2xl border-2 border-white shadow-lg flex items-center justify-center relative z-10">
-                    <div class="flex space-x-2">
-                        <div class="w-2.5 h-2.5 bg-white rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                        <div class="w-2.5 h-2.5 bg-white rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                    </div>
-                    <i class="fas fa-leaf absolute -top-3 right-0 text-green-500 drop-shadow-md transform rotate-12 text-sm"></i>
-                </div>
-                <div class="w-16 h-10 bg-gradient-to-b from-teal-500 to-emerald-600 rounded-b-xl border-x-2 border-b-2 border-white shadow-md relative z-10 flex items-center justify-center">
-                    <div class="w-6 h-1 bg-white/50 rounded-full"></div>
-                </div>
-                <div class="flex space-x-3 -mt-1 z-0 relative">
-                    <div class="w-3 h-4 bg-slate-700 rounded-b-md"></div>
-                    <div class="w-3 h-4 bg-slate-700 rounded-b-md"></div>
-                </div>
+                <!-- มาสคอตใหม่ลบพื้นหลัง (โปร่งใส) ขยับสนุกสนานขึ้น พร้อมคลาสปรับขนาด/สี -->
+                <img src="https://img1.pic.in.th/images/ChatGPT-Image-Mar-18-2026-04_57_08-PMa9e4de386c974fd9.png" alt="น้องคลังเกษตร" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4140/4140048.png'" class="bot-mascot-img drop-shadow-2xl relative z-10 transition-transform">
             </div>
-            <span class="absolute top-0 right-0 flex h-4 w-4 z-20">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-4 w-4 bg-red-500 border border-white"></span>
-            </span>
         </div>
 
         <div id="chat-box">
             <div id="chat-header">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-emerald-600 text-xl font-black shadow-sm"><i class="fas fa-robot"></i></div>
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden shadow-sm border border-emerald-100">
+                        <!-- มาสคอตในกล่องแชท -->
+                        <img src="https://img1.pic.in.th/images/ChatGPT-Image-Mar-18-2026-04_57_08-PMa9e4de386c974fd9.png" alt="น้องคลังเกษตร" class="w-8 h-8 object-contain drop-shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4140/4140048.png'">
+                    </div>
                     <div>
                         <div class="font-extrabold text-lg leading-tight">น้องคลังเกษตร</div>
                         <div class="text-[10px] font-medium opacity-90"><i class="fas fa-circle text-green-300 text-[8px] mr-1 animate-pulse"></i>พร้อมให้คำปรึกษาครับ</div>
@@ -1227,7 +1252,9 @@
             try {
                 chatState = { step: 0, category: '', topic: '' }; $('#chat-messages').empty();
                 if (!knowledgeBase || knowledgeBase.length === 0) { addBotMsg('<em class="text-xs text-red-500 font-bold"><i class="fas fa-exclamation-triangle"></i> ยังไม่มีข้อมูลในคลังความรู้</em>'); return; }
+                
                 addBotMsg('สวัสดีครับ กองบริหารการคลัง กรมวิชาการเกษตร ยินดีให้บริการครับ ☺️<br><br>กรุณาคลิกเลือกหมวดหมู่คำถามด้านล่างนี้ได้เลยครับ');
+                
                 const cats = [...new Set((knowledgeBase || []).filter(item => item && !isInvalidText(item.Category)).map(item => item.Category))];
                 if(cats.length > 0) { let btnHtml = ''; cats.forEach(c => { btnHtml += `<button type="button" class="chat-btn" onclick="selectBotCategory('${escapeHtml(c)}')">${getCategoryIcon(c)} <span class="flex-1">${escapeHtml(c)}</span></button>`; }); addBotMsg(btnHtml); } 
                 if($('#chat-keyboard-area').hasClass('active')) toggleKeyboard();
@@ -1380,7 +1407,6 @@
   }
   .ui-floating-bot {
     animation: ui-float-mascot 3s ease-in-out infinite !important;
-    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4) !important;
   }
   .ui-floating-bot:hover {
     animation: none !important;
