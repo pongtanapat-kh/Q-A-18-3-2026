@@ -1,5 +1,5 @@
 // ==========================================
-// ระบบถาม-ตอบข้อซักถาม กองคลัง กรมวิชาการเกษตร (เวอร์ชั่นเสถียร 100% พร้อม Cache System + LINE Alert)
+// ระบบถาม-ตอบข้อซักถาม กองบริหารการคลัง กรมวิชาการเกษตร (เวอร์ชั่นเสถียร 100% พร้อม Cache System + LINE Alert)
 // ==========================================
 
 const SHEET_ID = "1m5Z_inqtKGMrYzRiby-DWrIDtX4DfB3l1inQQ-lkAos";
@@ -8,7 +8,7 @@ const FOLDER_ID = "10uE290SLicXGyq873-CEAobJ5IRe92ez";
 function doGet(e) {
   try {
     return HtmlService.createHtmlOutputFromFile('index')
-      .setTitle('ระบบถาม-ตอบข้อซักถาม | กองคลัง กรมวิชาการเกษตร')
+      .setTitle('ระบบถาม-ตอบข้อซักถาม | กองบริหารการคลัง กรมวิชาการเกษตร')
       .addMetaTag('viewport', 'width=device-width, initial-scale=1')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   } catch (err) {
@@ -308,10 +308,10 @@ function submitQuestion(fd) {
     // 🟢 ส่งแจ้งเตือน LINE (มีคำถามใหม่)
     // ==========================================
     try {
-      let msgNewQ = "\n🟢 มีคำถามใหม่เข้าสู่ระบบ!\n";
-      msgNewQ += "หมวดหมู่: " + forceString(fd.category) + "\n";
-      msgNewQ += "เรื่อง: " + forceString(fd.subject) + "\n";
-      msgNewQ += "โปรดเข้าระบบเพื่อตรวจสอบครับ";
+      let msgNewQ = "\n🔴 มีคำถามใหม่เข้าสู่ระบบ!\n";
+      msgNewQ += "📁 หมวดหมู่: " + forceString(fd.category) + "\n";
+      msgNewQ += "📋 เรื่อง: " + forceString(fd.subject) + "\n";
+      msgNewQ += "🔗 โปรดเข้าระบบเพื่อตรวจสอบครับ https://fd-doa.github.io/questions/";
       sendLineNotification(msgNewQ);
     } catch(errLine) { console.error("Line Error:", errLine); }
 
@@ -408,9 +408,9 @@ function submitAnswer(id, answerTxt, fileData, fileName, staffName, ansByDepts) 
         try {
           let msgAns = "\n✅ เจ้าหน้าที่ได้ตอบคำถามแล้ว!\n";
           let qSubjectText = (cSubject !== -1 && data[i][cSubject - 1]) ? forceString(data[i][cSubject - 1]) : "คำถามรหัส " + id;
-          msgAns += "เรื่องที่ตอบ: " + qSubjectText + "\n";
-          msgAns += "ผู้ตอบ: " + displayStaff + "\n";
-          msgAns += "โปรดตรวจสอบคำตอบในระบบครับ";
+          msgAns += "📤 เรื่องที่ตอบ: " + qSubjectText + "\n";
+          msgAns += "🤵 ผู้ตอบ: " + displayStaff + "\n";
+          msgAns += "🔗 โปรดตรวจสอบคำตอบในระบบครับ https://fd-doa.github.io/questions/";
           sendLineNotification(msgAns);
         } catch(errLine) { console.error("Line Error:", errLine); }
 
@@ -531,10 +531,10 @@ function saveMaster(type, payload) {
     if (type === "Users" && payload.Email && payload.Email.trim() !== "") {
       try {
         const emailBody = "เรียนคุณ " + (payload.Name || "เจ้าหน้าที่") + ",\n\n" +
-                          "ผู้ดูแลระบบได้อัปเดตบัญชีเข้าใช้งานระบบถาม-ตอบข้อซักถาม กองคลัง กรมวิชาการเกษตร เรียบร้อยแล้ว\n\n" +
+                          "ผู้ดูแลระบบได้อัปเดตบัญชีเข้าใช้งานระบบถาม-ตอบข้อซักถาม กองบริหารการคลัง กรมวิชาการเกษตร เรียบร้อยแล้ว\n\n" +
                           "• Username: " + (payload.Username || "-") + "\n" +
                           "• Password: " + (payload.Password || "(รหัสผ่านเดิมถูกซ่อนไว้)") + "\n" +
-                          "• สิทธิ์: " + (payload.Role === 'admin' ? "Admin" : "Staff") + "\n\nขอแสดงความนับถือ,\nผู้ดูแลระบบ กองคลัง";
+                          "• สิทธิ์: " + (payload.Role === 'admin' ? "Admin" : "Staff") + "\n\nขอแสดงความนับถือ,\nผู้ดูแลระบบ กองบริหารการคลัง";
         MailApp.sendEmail(payload.Email.trim(), "แจ้งสิทธิ์เข้าใช้งานระบบถาม-ตอบ", emailBody);
       } catch (err) { }
     }
@@ -810,5 +810,5 @@ function sendLineNotification(message) {
 
 // 🛠️ ฟังก์ชันสำหรับทดสอบระบบ LINE (กด Run เพื่อขอสิทธิ์ Google)
 function TEST_LINE_ALERT() {
-  sendLineNotification("📢 ทดสอบระบบแจ้งเตือนจาก กองคลัง กรมวิชาการเกษตร\n(หากท่านเห็นข้อความนี้ แสดงว่าระบบเชื่อมต่อสมบูรณ์ครับ!)");
+  sendLineNotification("📢 ทดสอบระบบแจ้งเตือนจาก กองบริหารการคลัง กรมวิชาการเกษตร\n(หากท่านเห็นข้อความนี้ แสดงว่าระบบเชื่อมต่อสมบูรณ์ครับ!)");
 }
